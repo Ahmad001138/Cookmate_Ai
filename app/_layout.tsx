@@ -1,24 +1,56 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useFonts } from "expo-font";
+import { Stack, usePathname, useRouter, useSegments } from "expo-router";
+import React, { useEffect } from "react";
+import { AuthProvider, useAuth } from "../services/AuthProvider";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+    const [loaded, error] = useFonts({
+        'Outfit': require('./../assets/fonts/Outfit-Regular.ttf'),
+        'Outfit-bold': require('./../assets/fonts/Outfit-Bold.ttf'),
+    });
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    if (!loaded) return null;
+    if (error) return null;
+
+    return (
+        <AuthProvider>
+            <AuthGate />
+            <Stack>
+                <Stack.Screen name="landing" options={{ headerShown: false }} />
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="Pages/login" options={{ headerShown: false }} />
+                <Stack.Screen name="Pages/signup" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="Pages/home" options={{ headerShown: false }} />
+            </Stack>
+        </AuthProvider>
+    );
+}
+
+function AuthGate() {
+    const { user, initializing } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+    const segments = useSegments();
+
+    useEffect(() => {
+        if (initializing) return;
+
+        const isAuthScreen =
+            pathname === "/Pages/login" || pathname === "/Pages/signup";
+        const isProtected = pathname === "/Pages/home";
+
+        if (!user && isProtected) {
+            router.replace("/Pages/login" as any);
+            return;
+        }
+
+        if (user && (isAuthScreen || pathname === "/landing" || pathname === "/")) {
+            router.replace("/(tabs)/Home" as any);
+        }
+    }, [initializing, pathname, router, segments, user]);
+
+    return null;
 }

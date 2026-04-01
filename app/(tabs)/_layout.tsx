@@ -1,35 +1,49 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons'
+import { Tabs } from 'expo-router'
+import React from 'react'
+import { StyleSheet } from 'react-native'
+import { Colors } from '../../services/Colors'
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const _layout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+    <Tabs screenOptions={{
+      tabBarActiveTintColor: Colors.primary,
+      headerShown: false,
+    }}>
       <Tabs.Screen
-        name="index"
+        name='Home'
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          title: 'Home'
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name='Explore'
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
+          title: 'Explore'
+        }}
+      />
+      <Tabs.Screen
+        name='Cookbook'
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="book" size={size} color={color} />,
+          title: 'Cookbook'
+        }}
+      />
+      <Tabs.Screen
+        name='Profile'
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
+          title: 'Profile'
         }}
       />
     </Tabs>
-  );
+  )
 }
+
+export default _layout
+
+const styles = StyleSheet.create({
+
+})
